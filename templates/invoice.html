@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <title>Timesheet ({{ week.week_end }})</title>
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+  </head>
+
+  <main class="container">
+    <h3>Weekly Timesheet</h3>
+
+    <p>
+    Week ending on: <date>{{ week.week_end }}</date>
+    </p>
+
+    <table class="table">
+      <tr>
+        <th>Date</th><th>Hours</th>
+      </tr>
+      {% for date, hours in week.work_days %}
+      <tr>
+         <td><date>{{ date }}</date></td><td>{{ hours }}</td>
+      </tr>
+      {% endfor %}
+      <tr>
+         <td>Total hours</td><td>{{ week.total }}</td>
+      </tr>
+    </table>
+
+    <br/>
+    <p>
+    <i>I, Kirk Roerig have verified the hours above, I acknowledge that it is an accurate record of actual time worked.</i>
+    </p>
+    Date: <date>{{ week.now }}</date>
+  </main>
+</html>
