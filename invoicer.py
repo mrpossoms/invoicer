@@ -2,6 +2,7 @@
 
 from flask import *
 import datetime
+from workweek import workweek
 
 app = Flask(__name__)
 
@@ -18,8 +19,22 @@ def total_time(work_days):
 
     return total
 
+
+def week_start_end():
+    now = datetime.datetime.now()
+    day = now.weekday() + 1
+
+    start = now + datetime.timedelta(days=-day)
+    end = now + datetime.timedelta(days=6 - day)
+
+    return start, end
+
+
 @app.route('/')
 def index():
+    start, end = week_start_end()
+    work = workweek(start, end)
+
     days = [
             wd(2, 7, 2018, 4),
             wd(2, 8, 2018, 3.5),
