@@ -37,10 +37,9 @@ def workweek(start, end):
                 day=day.day
             )
 
-            key = str(day)
-            if key not in days:
-                days[key] = hours
+            if day not in days:
+                days[day] = hours
             else:
-                days[key] += hours
+                days[day] += hours
 
     return days
