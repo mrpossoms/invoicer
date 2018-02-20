@@ -19,8 +19,12 @@ def total_time(work_days):
     return total
 
 
-def week_start_end():
+def week_start_end(start):
     now = datetime.datetime.now()
+
+    if start:
+        now = datetime.datetime.strptime(start, "%d-%m-%Y")
+
     day = now.weekday() + 1
 
     start = now + datetime.timedelta(days=-day)
@@ -28,10 +32,14 @@ def week_start_end():
 
     return start, end
 
-
 @app.route('/')
-def index():
-    start, end = week_start_end()
+def this_week():
+    return week()
+
+@app.route('/<string:week_date>')
+def week(week_date=None):
+    start, end = week_start_end(week_date)
+
     work = workweek(start, end)
     days = []
 

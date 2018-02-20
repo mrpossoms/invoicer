@@ -1,0 +1,28 @@
+#!/usr/bin/python
+
+import os
+import time
+import datetime
+
+started = 0
+now = int(time.time());
+hours_worked = 0
+rate = 0
+
+home = os.path.expanduser('~') + '/'
+
+try:
+    with open(home + '.tracker/current', 'r') as file:
+        started = int(file.read())
+        hours_worked = float(now - started) / 3600
+        print('Worked for %0.2f hrs' % hours_worked)
+        
+except OSError:
+    print('No tracking file found!')
+
+with open(home + '.tracker/sessions', 'a+') as file:
+        file.write('%d %f\n' % (started, hours_worked))
+
+with open(home + '.tracker/rate') as file:
+    rate = float(file.read())
+    print('Earned %0.2f' % (hours_worked * rate))
