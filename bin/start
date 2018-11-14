@@ -1,0 +1,33 @@
+#!/usr/bin/python
+
+import os
+import time
+import datetime
+
+data_path = os.path.expanduser('~/.tracker')
+now = int(time.time());
+
+def mk_tracker_repo():
+	os.mkdir(data_path)
+	failure = os.system('git init {}'.format(data_path))
+	if failure > 0:
+		print('Error: initializing .tracker repo failed')
+		exit(2)
+
+if os.path.exists(data_path) is False:
+	print('.tracker repo missing, lets try to clone an existing one')
+	profile_name = raw_input('Github username: ')
+
+	if len(profile_name) == 0:
+		print('Error: did not provide a username')
+		exit(1)
+		
+	failure = os.system('git clone git@github.com:{}/.tracker.git {}'.format(profile_name, data_path))
+	if failure > 0:
+		print('Error: cloning .tracker repo failed, creating one instead')
+		mk_tracker_repo()
+
+with open(data_path + '/current', 'w+') as file:
+    file.write(str(now))
+
+print('Started working at %s' % datetime.datetime.utcfromtimestamp(now))
