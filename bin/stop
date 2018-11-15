@@ -10,6 +10,13 @@ hours_worked = 0
 rate = 0
 
 home = os.path.expanduser('~') + '/'
+data_path = os.path.expanduser('~/.tracker')
+
+def commit(msg):
+	return os.system('cd {}; git add sessions; git commit -m"{}"'.format(data_path, msg)) == 0
+
+def push():
+	return os.system('cd {}; git push'.format(data_path)) == 0
 
 try:
     with open(home + '.tracker/current', 'r') as file:
@@ -26,3 +33,6 @@ with open(home + '.tracker/sessions', 'a+') as file:
 with open(home + '.tracker/rate') as file:
     rate = float(file.read())
     print('Earned %0.2f' % (hours_worked * rate))
+
+if commit('Work finished at: {}'.format(time.ctime())):
+	push()

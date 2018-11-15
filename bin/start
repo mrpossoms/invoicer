@@ -14,7 +14,17 @@ def mk_tracker_repo():
 		print('Error: initializing .tracker repo failed')
 		exit(2)
 
-if os.path.exists(data_path) is False:
+
+def pull_tracker_repo():
+	failure = os.system('cd {}; git pull'.format(data_path))
+	if failure > 0:
+		print('Error: pulling tracker git repo failed. Try pulling manually')
+		exit(3)
+
+###############################################################################
+if os.path.exists(data_path):
+	pull_tracker_repo()
+else:
 	print('.tracker repo missing, lets try to clone an existing one')
 	profile_name = raw_input('Github username: ')
 
