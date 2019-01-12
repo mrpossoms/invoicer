@@ -4,7 +4,7 @@ import workweek
 import re
 from subprocess import Popen, PIPE, STDOUT
 
-class commit:
+class Commit:
 	def __init__(self, repo, keys, msg):
 		self.repo = repo
 		self.message = msg
@@ -30,12 +30,15 @@ class commit:
 		month = months[month]
 		day = int(day)
 		self.date = datetime.datetime(year, month, day)
+        
+        def __str__(self):
+            return 'Date: {}\nAuthor: {}\nMessage: {}\n'.format(str(self.date), self.author, self.message)
 
 def commits(repo_path, start, stop):
 	os.chdir(repo_path)
 	commits = []
 
-	cmd = 'git log'
+	cmd = 'git log --after={}-{}-{} --before={}-{}-{}'.format(start.year, start.month, start.day, stop.year, stop.month, stop.day + 1)
 	p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
 
 	commit_texts = re.split('commit ([0-9]|[a-z])*\n', p.stdout.read())
@@ -56,11 +59,8 @@ def commits(repo_path, start, stop):
 		for key_line in key_lines.split('\n'):
 			key, value = key_value(key_line)
 			if key != None: kvps[key] = value.lstrip().rstrip()
-		
-		for key in kvps:
-			print(key + '->' + kvps[key])
 
-		print('=>' + msg)
 		print('----')
 
 		c = Commit(repo_path, kvps, msg)
+                print(c)
