@@ -33,11 +33,11 @@ def week_start_end(start):
     return start, end
 
 @app.route('/')
-def this_week():
-    return week()
+def home():
+	return render_template('invoicer.html')
 
 @app.route('/<string:week_date>')
-def week(week_date=None):
+def week(week_date=None, repos=[], my_name=""):
     start, end = week_start_end(week_date)
 
     work = workweek(start, end)
