@@ -80,12 +80,14 @@ def week():
 
         days += [(date_str(key), round(work[key], 1), commit_messages)]
 
+    days.sort()
+
     now = datetime.datetime.now()
     week = { 
             'work_days': days,
             'week_end': date_str(end),
             'now': date_str(datetime.datetime.now()),
-            'total': total_time(days)
+            'total': round(total_time(days),1)
 
             }
 
