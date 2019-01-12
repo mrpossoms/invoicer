@@ -6,9 +6,23 @@
 
   <main class="container">
     <h1>Invoicer</h1>
+	<form action="week" method="get">
+		<section class="row">
+			<label for="date">Date</label>
+		</section>
+		<section class="row">
+			<input type="date" id="date" name="date" value="{{ start_date }}"></input>	
+		</section>
 
-    <br/>
-    <p>
-    </p>
+		<section class="row">
+			<label for="repos">Repository Paths</label>
+		</section>
+		<section class="row">
+			<textarea id="repos" name="repos"></textarea>
+		</section>
+		<section class="row">
+			<button>Generate</button>
+		</section>
+	</form>
   </main>
 </html>

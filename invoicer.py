@@ -23,7 +23,7 @@ def week_start_end(start):
     now = datetime.datetime.now()
 
     if start:
-        now = datetime.datetime.strptime(start, "%d-%m-%Y")
+        now = datetime.datetime.strptime(start, "%Y-%m-%d")
 
     day = now.weekday() + 1
 
@@ -34,10 +34,15 @@ def week_start_end(start):
 
 @app.route('/')
 def home():
-	return render_template('invoicer.html')
+	now = datetime.datetime.now()
+	return render_template('invoicer.html', start_date="{}-{:02d}-{:02d}".format(now.year, now.month, now.day))
 
-@app.route('/<string:week_date>')
-def week(week_date=None, repos=[], my_name=""):
+@app.route('/week/')
+def week():
+    week_date = request.args.get('date')
+    author    = request.args.get('author')
+    repos_str = request.args.get('repos')
+    
     start, end = week_start_end(week_date)
 
     work = workweek(start, end)
