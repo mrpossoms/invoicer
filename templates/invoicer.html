@@ -7,28 +7,22 @@
   <main class="container">
     <h1>Invoicer</h1>
 	<form action="week" method="get">
-		<section class="row">
+		<section class="form-group">
 			<label for="date">Date</label>
-		</section>
-		<section class="row">
-			<input type="date" id="date" name="date" value="{{ start_date }}">
+			<input type="date" id="date" name="date" class="form-control" value="{{ start_date }}">
 		</section>
 
-		<section class="row">
+		<section class="form-group">
 			<label for="repos">Repository Paths</label>
-		</section>
-		<section class="row">
-			<textarea id="repos" name="repos"></textarea>
+			<textarea id="repos" name="repos" class="form-control"></textarea>
 		</section>
 
-		<section class="row">
+		<section class="form-group">
 			<label for="author">Author name</label>
+			<input type="text" id="author" name="author" class="form-control">
 		</section>
-		<section class="row">
-			<input type="text" id="author" name="author">
-		</section>
-		<section class="row">
-			<button>Generate</button>
+		<section class="form-group">
+			<button class="btn btn-primary">Generate</button>
 		</section>
 	</form>
   </main>
