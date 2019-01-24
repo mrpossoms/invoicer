@@ -65,7 +65,7 @@ def week():
 
     start, end = week_start_end(week_date)
 
-    work = workweek(start, end)
+    work, rate = workweek(start, end)
     commits = get_commits(start, end, repos)
     days = []
 
@@ -87,8 +87,8 @@ def week():
             'work_days': days,
             'week_end': date_str(end),
             'now': date_str(datetime.datetime.now()),
-            'total': round(total_time(days),1)
-
+            'total': round(total_time(days),1),
+            'rate': rate,
             }
 
     return render_template('invoice.html', week=week)

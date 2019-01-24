@@ -6,6 +6,11 @@ def workweek(start, end):
     home = os.path.expanduser('~') + '/'
 
     days = {}
+    rate = 0
+
+    with open(home + '.tracker/rate') as file:
+        line = file.readline()
+        rate = float(line)
 
     with open(home + '.tracker/sessions') as file:
         while True:
@@ -42,4 +47,4 @@ def workweek(start, end):
             else:
                 days[day] += hours
 
-    return days
+    return days, rate
