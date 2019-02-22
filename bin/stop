@@ -19,10 +19,12 @@ def push():
 	return os.system('cd {}; git push'.format(data_path)) == 0
 
 try:
-    with open(home + '.tracker/current', 'r') as file:
+    session_path = home + '.tracker/current'
+    with open(session_path, 'r') as file:
         started = int(file.read())
         hours_worked = float(now - started) / 3600
         print('Worked for %0.2f hrs' % hours_worked)
+    os.unlink(session_path)
         
 except OSError:
     print('No tracking file found!')
