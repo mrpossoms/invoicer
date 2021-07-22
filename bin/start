@@ -37,7 +37,9 @@ else:
 		print('Error: cloning .tracker repo failed, creating one instead')
 		mk_tracker_repo()
 
-with open(data_path + '/current', 'w+') as file:
-    file.write(str(now))
-
-print('Started working at %s' % datetime.datetime.utcfromtimestamp(now))
+if os.path.exists(data_path + '/current'):
+    print('Error: session already in progress!')
+else:
+    with open(data_path + '/current', 'w+') as file:
+        file.write(str(now))
+    print('Started working at %s' % datetime.datetime.utcfromtimestamp(now))
