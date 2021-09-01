@@ -21,8 +21,10 @@ class Commit:
             'May': 5,
             'June': 6,
             'July': 7,
+            'Jul': 7,
             'Aug': 8,
             'Sept': 9,
+            'Sep': 9,
             'Oct': 10,
             'Nov': 11,
             'Dec': 12

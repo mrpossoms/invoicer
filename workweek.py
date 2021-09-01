@@ -2,7 +2,7 @@ import os
 import datetime
 
 
-def workweek(start, end):
+def work(start, end):
     home = os.path.expanduser('~') + '/'
 
     days = {}
@@ -24,7 +24,7 @@ def workweek(start, end):
             if line is None or len(line) <= 0:
                 break
 
-            timestamp, hours = line.split(' ')
+            timestamp, hours = line.split(' ')[0:2]
             timestamp = int(timestamp)
             hours = float(hours)
 

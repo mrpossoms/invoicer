@@ -2,7 +2,7 @@
 
 from flask import *
 import datetime
-from workweek import workweek
+import workweek
 from commits import commits
 
 
@@ -58,14 +58,20 @@ def home():
 
 @app.route('/week/')
 def week():
-    week_date = request.args.get('date')
-    author    = request.args.get('author')
-    repos_str = request.args.get('repos')
+    week_date  = request.args.get('date')
+    start_date = request.args.get('start-date')
+    end_date   = request.args.get('end-date')
+    author     = request.args.get('author')
+    repos_str  = request.args.get('repos')
     repos = repos_str.split('\n')
 
-    start, end = week_start_end(week_date)
+    start = datetime.datetime.fromisoformat(start_date)
+    end = datetime.datetime.fromisoformat(end_date)
 
-    work, rate = workweek(start, end)
+    if start is None and end is None:
+        start, end = week_start_end(week_date)
+
+    work, rate = workweek.work(start, end)
     commits = get_commits(start, end, repos)
     days = []
 
@@ -82,10 +88,13 @@ def week():
 
     days.sort()
 
+    print(start)
+
     now = datetime.datetime.now()
     week = { 
             'work_days': days,
-            'week_end': date_str(end),
+            'start_date': date_str(start),
+            'end_date': date_str(end),
             'now': date_str(datetime.datetime.now()),
             'total': round(total_time(days),1),
             'rate': rate,

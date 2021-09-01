@@ -8,8 +8,11 @@
     <h1>Invoicer</h1>
 	<form action="week" method="get">
 		<section class="form-group">
-			<label for="date">Date</label>
-			<input type="date" id="date" name="date" class="form-control" value="{{ start_date }}">
+			<label for="date">Start Date</label>
+			<input type="date" id="start-date" name="start-date" class="form-control" value="{{ start_date }}">
+
+			<label for="date">End Date</label>
+			<input type="date" id="end-date" name="end-date" class="form-control" value="{{ end_date }}">
 		</section>
 
 		<section class="form-group">
