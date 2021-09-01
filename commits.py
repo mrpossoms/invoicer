@@ -40,7 +40,7 @@ class Commit:
 
 def commits(repo_path, start, stop):
     os.chdir(repo_path)
-    cmd = 'git log --after={}-{}-{} --before={}-{}-{}'.format(start.year, start.month, start.day, stop.year, stop.month, stop.day + 1)
+    cmd = 'git log --after={}-{}-{} --before={}-{}-{} --all'.format(start.year, start.month, start.day, stop.year, stop.month, stop.day + 1)
     p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     commit_texts = re.split('commit ([0-9]|[a-z])*\n', str(p.stdout.read(), 'utf-8'))
 

@@ -78,17 +78,14 @@ def week():
     for key in work:
         commit_messages = ''
 
-        if key not in commits: continue
+        if key in commits:
+            for commit in commits[key]:
+                if author in commit.author:
+                    commit_messages += commit.message + '. '
 
-        for commit in commits[key]:
-            if author in commit.author:
-                commit_messages += commit.message + '. '
-
-        days += [(date_str(key), round(work[key], 1), commit_messages)]
+        days += [(key, round(work[key], 1), commit_messages)]
 
     days.sort()
-
-    print(start)
 
     now = datetime.datetime.now()
     week = { 

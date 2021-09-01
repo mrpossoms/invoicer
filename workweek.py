@@ -13,6 +13,7 @@ def work(start, end):
         rate = float(line)
 
     with open(home + '.tracker/sessions') as file:
+        net_hours = 0
         while True:
             line = None
 
@@ -27,6 +28,7 @@ def work(start, end):
             timestamp, hours = line.split(' ')[0:2]
             timestamp = int(timestamp)
             hours = float(hours)
+            net_hours += hours
 
             day = datetime.datetime.fromtimestamp(timestamp)
 
@@ -34,7 +36,7 @@ def work(start, end):
                 continue
 
             if day > end:
-                break
+                continue
 
             day = datetime.datetime(
                 year=day.year,
@@ -46,5 +48,12 @@ def work(start, end):
                 days[day] = hours
             else:
                 days[day] += hours
+
+    net_hours = 0
+    for day in days:
+        print('{} - {}'.format(day, days[day]))
+        net_hours += days[day]
+    print('net: {}'.format(net_hours))
+
 
     return days, rate

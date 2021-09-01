@@ -17,7 +17,7 @@
       </tr>
       {% for date, hours, message in week.work_days %}
       <tr>
-         <td><date>{{ date }}</date></td><td>{{ message }}</td><td>{{ hours }}</td>
+         <td><date>{{ date.month }}-{{ date.day }}-{{ date.year }}</date></td><td>{{ message }}</td><td>{{ hours }}</td>
       </tr>
       {% endfor %}
       <tr>
