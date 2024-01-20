@@ -19,10 +19,8 @@ def job(args):
 
 		print(f'Started session for job "{args.name}"')
 	elif args.command == 'stop':
-		stop_par
-
 		job = Job(args.name)
-		job.sessions.stop()
+		job.sessions.stop(message=args.message)
 		print(f'Stopped session for job "{args.name}"')
 	elif args.command == 'invoice':
 		job = Job(args.name)
@@ -35,7 +33,10 @@ if __name__ == "__main__":
 	job_parser = subparsers.add_parser('job')
 	job_parser.add_argument('name', type=str)
 	job_parser.add_argument('command', choices=['start', 'stop', 'invoice'])
+	job_parser.add_argument('--message', type=str, default=None)
 	job_parser.set_defaults(func=job)
+
+
 
 	args = parser.parse_args()
 	args.func(args)

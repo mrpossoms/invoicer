@@ -38,21 +38,24 @@ class Job:
 			:raises     Exception:  If a current file already exists
 			"""
 			if self.current_session_path.exists():
-				raise Exception(f'Error: session already in progress for job {self._path.name}')
+				raise Exception(f'Error: session already in progress for job')
 
 			start_time = int(time.time())
 			self.current_session_path.write_text(f'{str(start_time)},{Path.cwd()}')
 			return start_time
 
-		def stop(self) -> int:
+		def stop(self, message:str='') -> int:
 			if not self.current_session_path.exists():
-				raise Exception(f'Error: no session in progress for job {self._path.name}')
+				raise Exception(f'Error: no session in progress for job')
+
+			if message is None:
+				message = ''
 
 			start_time, start_cwd = self.current_session()
 			end_time = int(time.time())
 
 			with open(self._csv_path, 'a') as file:
-				file.write(f'{start_time},{end_time},{start_cwd}\n')
+				file.write(f'{start_time},{end_time},{start_cwd},{message}\n')
 
 			self.current_session_path.unlink()
 
