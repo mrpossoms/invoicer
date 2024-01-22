@@ -17,9 +17,9 @@ class Repo:
 			try:
 				print(f'.{name()} repo missing, lets try to clone an existing one')
 				username = input('Github username: ')
-				self.clone()
+				self.clone(username)
 			except:
-				print('Error: cloning .{name()} repo failed, creating one instead')
+				print(f'Error: cloning .{name()} repo failed, creating one instead')
 				self.make()
 
 	def make(self):
@@ -52,6 +52,7 @@ class Repo:
 			raise Exception(f'Error: cloning .{name()} repo failed, creating one instead')
 
 	def pull(self):
+		print(f'cd {self.path}; git pull')
 		failure = os.system(f'cd {self.path}; git pull')
 		if failure > 0:
 			raise Exception('Error: pulling tracker git repo failed. Try pulling manually')
