@@ -95,8 +95,6 @@ class Job:
 
 				return [row for row in rows if int(row[0]) >= self._start_time and int(row[1]) <= self._end_time]
 
-
-
 	def __init__(self, 
 		name:str, 
 		hourly_rate:float=None):
@@ -121,6 +119,15 @@ class Job:
 	def sessions(self, start_time:int=None, end_time:int=None) -> Sessions:
 		return Job.Sessions(self, start_time=start_time, end_time=end_time)
 
+
+	@staticmethod
+	def jobs() -> List[str]:
+		"""
+		Returns a list of all jobs
+		"""
+		repo = Repo()
+		jobs_path = repo.path / Path('jobs')
+		return [job.name for job in jobs_path.iterdir() if job.is_dir()]
 
 if __name__ == '__main__':
 	import shutil

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
   <head>
     <title>Generate Timesheet</title>
@@ -8,10 +9,19 @@
     <h1>Invoicer</h1>
 	<form action="week" method="get">
 		<section class="form-group">
-			<label for="date">Start Date</label>
+			<label for="job-name">Job</label>
+			<select id="job-name" name="job-name" class="form-control">
+				{% for job in jobs %}
+					<option value="{{ job }}">{{ job }}</option>
+				{% endfor %}
+			</select>
+		</section>
+
+		<section class="form-group">
+			<label for="start-date">Start Date</label>
 			<input type="date" id="start-date" name="start-date" class="form-control" value="{{ start_date }}">
 
-			<label for="date">End Date</label>
+			<label for="end-date">End Date</label>
 			<input type="date" id="end-date" name="end-date" class="form-control" value="{{ end_date }}">
 		</section>
 

@@ -2,8 +2,9 @@
 
 from flask import *
 import datetime
-import workweek
-from commits import commits
+from job import Job
+# import workweek
+# from commits import commits
 
 
 app = Flask(__name__)
@@ -21,84 +22,85 @@ def total_time(work_days):
     return total
 
 
-def week_start_end(start):
-    now = datetime.datetime.now()
+def start(job):
+    def week_start_end(start):
+        now = datetime.datetime.now()
 
-    if start:
-        now = datetime.datetime.strptime(start, "%Y-%m-%d")
+        if start:
+            now = datetime.datetime.strptime(start, "%Y-%m-%d")
 
-    day = now.weekday() + 1
+        day = now.weekday() + 1
 
-    start = now + datetime.timedelta(days=-day)
-    end = now + datetime.timedelta(days=7 - day)
+        start = now + datetime.timedelta(days=-day)
+        end = now + datetime.timedelta(days=7 - day)
 
-    return start, end
-
-
-def get_commits(start, end, repo_paths):
-    commit_table = {}
-
-    for repo_path in repo_paths:
-        if len(repo_path) == 0: continue
-
-        for commit in commits(repo_path.rstrip(), start, end):
-            if commit.date in commit_table:
-                commit_table[commit.date] += [commit]
-            else:
-                commit_table[commit.date] = [commit]
-
-    return commit_table
+        return start, end
 
 
-@app.route('/')
-def home():
-	now = datetime.datetime.now()
-	return render_template('invoicer.html', start_date="{}-{:02d}-{:02d}".format(now.year, now.month, now.day))
+    def get_commits(start, end, repo_paths):
+        commit_table = {}
+
+        for repo_path in repo_paths:
+            if len(repo_path) == 0: continue
+
+            for commit in commits(repo_path.rstrip(), start, end):
+                if commit.date in commit_table:
+                    commit_table[commit.date] += [commit]
+                else:
+                    commit_table[commit.date] = [commit]
+
+        return commit_table
 
 
-@app.route('/week/')
-def week():
-    week_date  = request.args.get('date')
-    start_date = request.args.get('start-date')
-    end_date   = request.args.get('end-date')
-    author     = request.args.get('author')
-    repos_str  = request.args.get('repos')
-    repos = repos_str.split('\n')
-
-    start = datetime.datetime.fromisoformat(start_date)
-    end = datetime.datetime.fromisoformat(end_date)
-
-    if start is None and end is None:
-        start, end = week_start_end(week_date)
-
-    work, rate = workweek.work(start, end)
-    commits = get_commits(start, end, repos)
-    days = []
-
-    for key in work:
-        commit_messages = ''
-
-        if key in commits:
-            for commit in commits[key]:
-                if author in commit.author:
-                    commit_messages += commit.message + '. '
-
-        days += [(key, round(work[key], 1), commit_messages)]
-
-    days.sort()
-
-    now = datetime.datetime.now()
-    week = { 
-            'work_days': days,
-            'start_date': date_str(start),
-            'end_date': date_str(end),
-            'now': date_str(datetime.datetime.now()),
-            'total': round(total_time(days),1),
-            'rate': rate,
-            }
-
-    return render_template('invoice.html', week=week)
+    @app.route('/')
+    def home():
+    	now = datetime.datetime.now()
+    	return render_template('invoicer.html', jobs=Job.jobs(), start_date="{}-{:02d}-{:02d}".format(now.year, now.month, now.day))
 
 
-app.run(host='0.0.0.0')
-url_for('static', filename='bootstrap.min.css')
+    @app.route('/week/')
+    def week():
+        week_date  = request.args.get('date')
+        start_date = request.args.get('start-date')
+        end_date   = request.args.get('end-date')
+        author     = request.args.get('author')
+        repos_str  = request.args.get('repos')
+        repos = repos_str.split('\n')
+
+        start = datetime.datetime.fromisoformat(start_date)
+        end = datetime.datetime.fromisoformat(end_date)
+
+        if start is None and end is None:
+            start, end = week_start_end(week_date)
+
+        # TODO
+        work, rate = workweek.work(start, end)
+        commits = get_commits(start, end, repos)
+        days = []
+
+        for key in work:
+            commit_messages = ''
+
+            if key in commits:
+                for commit in commits[key]:
+                    if author in commit.author:
+                        commit_messages += commit.message + '. '
+
+            days += [(key, round(work[key], 1), commit_messages)]
+
+        days.sort()
+
+        now = datetime.datetime.now()
+        week = { 
+                'work_days': days,
+                'start_date': date_str(start),
+                'end_date': date_str(end),
+                'now': date_str(datetime.datetime.now()),
+                'total': round(total_time(days),1),
+                'rate': rate,
+                }
+
+        return render_template('invoice.html', week=week)
+
+    app.run(host='0.0.0.0')
+    url_for('static', filename='bootstrap.min.css')

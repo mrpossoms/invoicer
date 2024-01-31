@@ -3,6 +3,7 @@
 from kontrack.job import Job
 from kontrack.repo import Repo
 
+import kontrack.invoicer as invoicer
 import argparse
 
 def job(args):
@@ -24,7 +25,7 @@ def job(args):
 		print(f'Stopped session for job "{args.name}"')
 	elif args.command == 'invoice':
 		job = Job(args.name)
-		job.invoice()
+		invoicer.start(job)
 
 def main():
 	parser = argparse.ArgumentParser(prog='kontrack')
@@ -37,6 +38,10 @@ def main():
 	job_parser.set_defaults(func=job)
 
 	args = parser.parse_args()
+	
+	# AttributeError: 'Namespace' object has no attribute 'func'
+	# means that the subparser was not called, probably because of
+	# a missing sub command
 	args.func(args)
 
 if __name__ == "__main__":
