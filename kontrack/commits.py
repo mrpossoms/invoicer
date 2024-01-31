@@ -1,6 +1,5 @@
 import os
 import datetime
-import workweek
 import re
 from subprocess import Popen, PIPE, STDOUT
 

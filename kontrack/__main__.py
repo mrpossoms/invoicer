@@ -15,18 +15,18 @@ def job(args):
 			hourly_rate = float(input('Hourly rate: '))
 			job = Job(args.name, hourly_rate)
 
-		job.sessions.start()
+		job.sessions().start()
 
 		print(f'Started session for job "{args.name}"')
 	elif args.command == 'stop':
 		job = Job(args.name)
-		job.sessions.stop(message=args.message)
+		job.sessions().stop(message=args.message)
 		print(f'Stopped session for job "{args.name}"')
 	elif args.command == 'invoice':
 		job = Job(args.name)
 		job.invoice()
 
-if __name__ == "__main__":
+def main():
 	parser = argparse.ArgumentParser(prog='kontrack')
 	subparsers = parser.add_subparsers(dest='command')
 
@@ -36,7 +36,8 @@ if __name__ == "__main__":
 	job_parser.add_argument('--message', type=str, default=None)
 	job_parser.set_defaults(func=job)
 
-
-
 	args = parser.parse_args()
 	args.func(args)
+
+if __name__ == "__main__":
+	main()

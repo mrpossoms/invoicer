@@ -1,14 +1,36 @@
 from pathlib import Path
 from kontrack.repo import Repo
 from typing import Tuple, List
+from kontrack.commits import commits, Commit
 import time
 import csv
 
 class Job:
+	class Session:
+		def __init__(self, start_time:int, end_time:int, cwd:Path, message:str=''):
+			self._start_time = start_time
+			self._end_time = end_time
+			self._cwd = cwd
+			self._message = message
+
+		@property
+		def hours(self) -> float:
+			return (self._end_time - self._start_time) / 3600.0
+
+		@property
+		def commit_messages(self) -> List[Commit]:
+			"""
+			Scrapes commit messages from the git repo at the cwd
+			"""
+			return commits(self._cwd, self._start_time, self._end_time)
+
 	class Sessions:
-		def __init__(self, job):
+		def __init__(self, job, start_time:int=None, end_time:int=None):
 			self._job = job
 			self._csv_path = self._job._path / Path('sessions.csv')
+
+			self._start_time = start_time
+			self._end_time = end_time
 
 			if not self._csv_path.exists():
 				self._csv_path.touch()
@@ -61,7 +83,9 @@ class Job:
 
 			return end_time
 
-		def select(self, start_timestamp:int, end_timestamp:int) -> List[List]:
+
+
+		def select(self) -> List[List]:
 			"""
 			Selects all sessions between start_timestamp and end_timestamp
 			"""
@@ -69,7 +93,9 @@ class Job:
 				reader = csv.reader(file)
 				rows = list(reader)
 
-				return [row for row in rows if int(row[0]) >= start_timestamp and int(row[1]) <= end_timestamp]
+				return [row for row in rows if int(row[0]) >= self._start_time and int(row[1]) <= self._end_time]
+
+
 
 	def __init__(self, 
 		name:str, 
@@ -92,14 +118,16 @@ class Job:
 	def hourly_rate(self) -> float:
 		return float((self._path / Path('hourly_rate')).read_text())
 
-	@property
-	def sessions(self) -> Sessions:
-		return Job.Sessions(self)
+	def sessions(self, start_time:int=None, end_time:int=None) -> Sessions:
+		return Job.Sessions(self, start_time=start_time, end_time=end_time)
 
 
 if __name__ == '__main__':
 	import shutil
 	import os
+
+	os.system('rm -rf ~/.kontrack/jobs/test')
+
 	# try to access a job that doesn't exist
 	ok = False
 	try:
@@ -116,14 +144,14 @@ if __name__ == '__main__':
 	
 	# ensure a session is recorded correctly
 	cwd = Path.cwd()
-	start = job.sessions.start()
-	end = job.sessions.stop()
-	with open(job.sessions._csv_path, 'r') as file:
+	start = job.sessions().start()
+	end = job.sessions().stop()
+	with open(job.sessions()._csv_path, 'r') as file:
 		lines = file.readlines()
-		assert(lines[0] == f'{start},{end},{cwd}\n')
+		assert(lines[0] == f'{start},{end},{cwd},\n')
 
 	# ensure sessions can be queried for a time range
-	assert(len(job.sessions.select(start-1, end+1)) == 1)
-	assert(len(job.sessions.select(end+1, end+2)) == 0)
+	assert(len(job.sessions(start-1, end+1).select()) == 1)
+	assert(len(job.sessions(end+1, end+2).select()) == 0)
 
 	os.system('rm -rf ~/.kontrack/jobs/test')

@@ -1,22 +1,18 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[project]
+[tool.poetry]
 name = "kontrack"
-version = "0.0.1"
-authors = [
-  { name="Kirk Roerig", email="mr.possoms@gmail.com" },
-]
-description = "Time tracking and invoicing for contractors and gig workers."
+version = "0.1.0"
+description = "Time tracking and invoicing software for gig workers"
+authors = ["Kirk Roerig <mr.possoms@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.8"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
 
-[project.urls]
-Homepage = "https://github.com/pypa/kontrack"
-Issues = "https://github.com/pypa/kontrack/issues"
+[tool.poetry.dependencies]
+python = "^3.10"
+Flask = "^3.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[project.scripts]
+kontrack = "kontrack.__main__:main"
