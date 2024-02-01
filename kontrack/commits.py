@@ -34,7 +34,8 @@ class Commit:
         self.date = datetime.datetime(year, month, day)
 
     def __str__(self):
-        return 'Date: {}\nAuthor: {}\nMessage: {}\n'.format(str(self.date), self.author, self.message)
+        # return 'Date: {}\nAuthor: {}\nMessage: {}\n'.format(str(self.date), self.author, self.message)
+        return self.message
 
 
 def commits(repo_path, start, stop):

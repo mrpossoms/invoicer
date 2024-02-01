@@ -55,7 +55,7 @@ class Repo:
 		print(f'cd {self.path}; git pull')
 		failure = os.system(f'cd {self.path}; git pull')
 		if failure > 0:
-			raise Exception('Error: pulling tracker git repo failed. Try pulling manually')
+			print('Error: pulling tracker git repo failed. Try pulling manually')
 			
 
 

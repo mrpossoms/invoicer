@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from flask import *
-import datetime
+from datetime import datetime, timedelta
 from job import Job
 # import workweek
 # from commits import commits
@@ -24,15 +24,15 @@ def total_time(work_days):
 
 def start(job):
     def week_start_end(start):
-        now = datetime.datetime.now()
+        now = datetime.now()
 
         if start:
-            now = datetime.datetime.strptime(start, "%Y-%m-%d")
+            now = datetime.strptime(start, "%Y-%m-%d")
 
         day = now.weekday() + 1
 
-        start = now + datetime.timedelta(days=-day)
-        end = now + datetime.timedelta(days=7 - day)
+        start = now + timedelta(days=-day)
+        end = now + timedelta(days=7 - day)
 
         return start, end
 
@@ -54,12 +54,13 @@ def start(job):
 
     @app.route('/')
     def home():
-    	now = datetime.datetime.now()
-    	return render_template('invoicer.html', jobs=Job.jobs(), start_date="{}-{:02d}-{:02d}".format(now.year, now.month, now.day))
+    	now = datetime.now()
+    	return render_template('invoicer.html', jobs=Job.jobs(), end_date="{}-{:02d}-{:02d}".format(now.year, now.month, now.day))
 
 
     @app.route('/week/')
     def week():
+        job_name   = request.args.get('job-name')
         week_date  = request.args.get('date')
         start_date = request.args.get('start-date')
         end_date   = request.args.get('end-date')
@@ -67,35 +68,39 @@ def start(job):
         repos_str  = request.args.get('repos')
         repos = repos_str.split('\n')
 
-        start = datetime.datetime.fromisoformat(start_date)
-        end = datetime.datetime.fromisoformat(end_date)
+        start = datetime.fromisoformat(start_date)
+        end = datetime.fromisoformat(end_date)
 
         if start is None and end is None:
             start, end = week_start_end(week_date)
 
         # TODO
-        work, rate = workweek.work(start, end)
-        commits = get_commits(start, end, repos)
+        job = Job(job_name)
+        work, rate = job.sessions(datetime.timestamp(start), datetime.timestamp(end)).select(), job.hourly_rate
+        # commits = get_commits(start, end, repos)
         days = []
 
-        for key in work:
-            commit_messages = ''
+        for session in work:
+            days += [(session.start_date, round(session.hours, 1), [str(c) for c in session.commits] + [session.message])]
 
-            if key in commits:
-                for commit in commits[key]:
-                    if author in commit.author:
-                        commit_messages += commit.message + '. '
+        # for key in work:
+        #     commit_messages = ''
 
-            days += [(key, round(work[key], 1), commit_messages)]
+        #     if key in commits:
+        #         for commit in commits[key]:
+        #             if author in commit.author:
+        #                 commit_messages += commit.message + '. '
+
+        # days += [(key, round(work[key], 1), commit_messages)]
 
         days.sort()
 
-        now = datetime.datetime.now()
+        now = datetime.now()
         week = { 
                 'work_days': days,
                 'start_date': date_str(start),
                 'end_date': date_str(end),
-                'now': date_str(datetime.datetime.now()),
+                'now': date_str(datetime.now()),
                 'total': round(total_time(days),1),
                 'rate': rate,
                 }

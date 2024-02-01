@@ -2,27 +2,44 @@ from pathlib import Path
 from kontrack.repo import Repo
 from typing import Tuple, List
 from kontrack.commits import commits, Commit
+from datetime import datetime
 import time
 import csv
+import os
+
+# TODO: figure out how to nest session inside of job for a more semantically meaningful type name
+class Session:
+	def __init__(self, start_time:int, end_time:int, cwd:Path, message:str=''):
+		self._start_time = start_time
+		self._end_time = end_time
+		self._cwd = cwd
+		self._message = message
+
+	@property
+	def hours(self) -> float:
+		return (self._end_time - self._start_time) / 3600.0
+
+	@property
+	def commits(self) -> List[Commit]:
+		"""
+		Scrapes commit messages from the git repo at the cwd
+		"""
+		return commits(os.path.expanduser(self._cwd), self.start_date, self.end_date)
+
+	@property
+	def message(self) -> str:
+		return self._message
+
+	@property
+	def start_date(self) -> datetime:
+		return datetime.fromtimestamp(self._start_time)
+
+	@property
+	def end_date(self) -> datetime:
+		return datetime.fromtimestamp(self._end_time)
 
 class Job:
-	class Session:
-		def __init__(self, start_time:int, end_time:int, cwd:Path, message:str=''):
-			self._start_time = start_time
-			self._end_time = end_time
-			self._cwd = cwd
-			self._message = message
 
-		@property
-		def hours(self) -> float:
-			return (self._end_time - self._start_time) / 3600.0
-
-		@property
-		def commit_messages(self) -> List[Commit]:
-			"""
-			Scrapes commit messages from the git repo at the cwd
-			"""
-			return commits(self._cwd, self._start_time, self._end_time)
 
 	class Sessions:
 		def __init__(self, job, start_time:int=None, end_time:int=None):
@@ -83,9 +100,7 @@ class Job:
 
 			return end_time
 
-
-
-		def select(self) -> List[List]:
+		def select(self) -> List[Session]:
 			"""
 			Selects all sessions between start_timestamp and end_timestamp
 			"""
@@ -93,7 +108,18 @@ class Job:
 				reader = csv.reader(file)
 				rows = list(reader)
 
-				return [row for row in rows if int(row[0]) >= self._start_time and int(row[1]) <= self._end_time]
+				sessions = []
+
+				for row in rows:
+					sess_start, sess_end, cwd, message = int(row[0]), int(row[1]), row[2], row[3]
+
+					if sess_start < self._start_time or sess_end > self._end_time:
+						continue
+
+					sessions.append(Session(sess_start, sess_end, cwd, message=message))
+
+				return sessions
+
 
 	def __init__(self, 
 		name:str, 
