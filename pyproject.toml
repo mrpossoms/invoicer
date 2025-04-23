@@ -13,6 +13,3 @@ Flask = "^3.0.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[project.scripts]
-kontrack = "kontrack.__main__:main"
